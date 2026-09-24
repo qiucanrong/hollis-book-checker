@@ -215,22 +215,36 @@ def classify_rows(sheet, rows, isbn_col, client, progress=None, status=None):
 
 
 def result_notes(result):
-    """Use the same notes in the preview and downloaded workbook."""
-    labels = {
-        "green": "No verified HOLLIS match; purchase candidate.",
-        "red": "1 verified HOLLIS match.",
-        "yellow": f"{len(result.matches)} verified HOLLIS matches; manual review required.",
-        "white": "Manual review required.",
-    }
-    lines = [labels.get(result.status, "Manual review required.")]
-    if result.reason:
-        lines.append(result.reason)
-    if result.status == "white" and result.matches:
-        lines.append("Verified matches found so far (search outcome remains uncertain):")
-    for index, match in enumerate(result.matches, 1):
-        lines.append(f"{index}. {match.title}")
-        if match.url:
-            lines.append(match.url)
+    """Keep successful results simple; explain uncolored rows."""
+    if result.status == "green":
+        return ""
+
+    if result.status == "red":
+        return result.matches[0].title if result.matches else ""
+
+    if result.status == "yellow":
+        return "\n".join(
+            f"{match.title} — {match.url}"
+            if match.url
+            else match.title
+            for match in result.matches
+        )
+
+    # Uncolored rows: explain why manual review is needed.
+    lines = [result.reason or "Manual review required."]
+
+    if result.matches:
+        lines.append(
+            "Matching records found, but the overall result "
+            "could not be confirmed:"
+        )
+        for match in result.matches:
+            lines.append(
+                f"{match.title} — {match.url}"
+                if match.url
+                else match.title
+            )
+
     return "\n".join(lines)
 
 

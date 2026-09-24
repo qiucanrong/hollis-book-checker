@@ -16,7 +16,7 @@ logging.basicConfig(
     level=getattr(logging, os.getenv("HOLLIS_LOG_LEVEL", "WARNING").upper(), logging.WARNING),
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
-st.set_page_config(page_title="HOLLIS ISBN Checker", layout="wide")
+st.set_page_config(page_title="HOLLIS ISBN Checker", layout="centered")
 st.title("HOLLIS ISBN Purchase Screening")
 st.write("Upload a book list, select its ISBN and title columns, and download a checked Excel copy.")
 st.caption("Green: no verified match · Red: one match · Yellow: multiple matches · Uncolored: manual review")
